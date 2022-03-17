@@ -10,12 +10,15 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: ap-south-1
+  environment:
+    AUCTIONS_TABLE_NAME: ${self:custom.AuctionsTable.name}
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:PutItem
       Resource:
-        arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/AuctionsTable
+        # arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/AuctionsTable
+        - ${self:custom.AuctionsTable.arn}
 
 # cloudformation code for dynamodb
 resources:
@@ -34,5 +37,9 @@ functions:
           path: /auction
 
 custom:
+  AuctionsTable: 
+    name: !Ref AuctionsTable
+    arn: !GetAtt AuctionsTable.Arn
+
   bundle:
     linting: false
